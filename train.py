@@ -9,6 +9,7 @@ import tensorflow as tf
 from keras.preprocessing import image
 
 char_path = './Datasets/train'
+models = 'model_01'
 
 IMG_SIZE = (64, 64)
 channels = 1
@@ -69,6 +70,7 @@ def train(model):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
+    plt.savefig('graph/model_accuracy' + str(models) + '.png')
     plt.show()
 
     plt.plot(History.history['loss'])
@@ -77,16 +79,17 @@ def train(model):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
+    plt.savefig('graph/model_loss' + str(models) + '.png')
     plt.show()
 
-    model.save_weights('weigthse.h5')
-    print('le model a été sauvegarder comme étant modelPrediction.h5')
+    model.save_weights('model/' + str(models) + '.h5')
+    print('le model a été sauvegarder comme étant ' + str(models) + '.h5')
 
 
 def main():
     model = create_model()
-    if os.path.exists('weigthse.h5'):
-        model.load_weights('weigthse.h5')
+    if os.path.exists('model/' + str(models) + '.h5'):
+        model.load_weights('model/' + str(models) + '.h5')
     else:
         train(model)
     train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
@@ -101,13 +104,11 @@ def main():
 
     print(training_set.class_indices)
     print(result)
-    print("quoi ???")
     print(leaf)
     for i in range(len(result[0])):
         if result[0][i] == 1:
             print(i)
-            ##print("resultat nonlogique : "+str(leaf[(len(leaf)-1)-i]))
-            print("resultat logique : "+str(leaf[i]))
+            print("resultat logique : " + str(leaf[i] + ', d\'indice ' + str(i)))
 
 
 main()

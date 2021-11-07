@@ -8,7 +8,7 @@ from tensorflow.keras.utils import to_categorical
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 
-char_path = './Datasets/train'
+char_path = '../Datasets/train'
 char_dict = {}
 IMG_SIZE = (64, 64)
 channels = 1

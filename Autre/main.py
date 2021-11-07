@@ -8,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 from keras.preprocessing import image
 
-char_path = './Datasets/train'
+char_path = '../Datasets/train'
 char_dict = {}
 IMG_SIZE = (64, 64)
 channels = 1
@@ -56,7 +56,7 @@ cnn.compile(optimizer = 'rmsprop' , loss = 'categorical_crossentropy' , metrics 
 cnn.fit(x = training_set , validation_data = test_set , epochs = EPOCHS)
 
 
-test_image = image.load_img('Datasets/test/diospyros_virginiana/12992000042158.jpg',target_size=(64,64))
+test_image = image.load_img('../Datasets/test/diospyros_virginiana/12992000042158.jpg', target_size=(64, 64))
 test_image = image.img_to_array(test_image)
 test_image = np.expand_dims(test_image,axis=0)
 result = cnn.predict(test_image)
