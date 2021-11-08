@@ -21,12 +21,44 @@ for char in os.listdir(char_path):
 
 dict = caer.sort_dict(dict, descending=True)
 leaf = []
+sample_count = []
+sample_name = []
 count = 0
 for i in dict:
     leaf.append(i[0])
+    sample_count.append(i[1])
+    sample_name.append(i[0])
     count += 1
     if count >= 15:
         break
+"""
+classes= []
+sample_counts= []
+for f in os.listdir('Datasets/train'):
+    train_class_path= os.path.join('Datasets/train', f)
+    if os.path.isdir(train_class_path):
+        classes.append(f)
+        sample_counts.append(len(os.listdir(train_class_path)))
+"""
+
+
+
+
+
+plt.rcdefaults()
+fig, ax = plt.subplots()
+
+# Example data
+y_pos = np.arange(len(leaf))
+
+ax.barh(y_pos, sample_count, align='center')
+ax.set_yticks(y_pos)
+ax.set_yticklabels(sample_name)
+ax.invert_yaxis()  # labels read top-to-bottom
+ax.set_xlabel('Sample Counts')
+ax.set_title('Sample Counts Per Class')
+plt.savefig('graph/sample_count' + str(models) + '.png')
+plt.show()
 
 
 def create_model():
@@ -97,7 +129,7 @@ def main():
                                                      class_mode='categorical', classes=leaf)
 
     # test image
-    test_image = image.load_img('Datasets/test/diospyros_virginiana/pi0196-05-4.jpg', target_size=(64, 64))
+    test_image = image.load_img('Datasets/test/acer_rubrum/pi2608-04-2.jpg', target_size=(64, 64))
     test_image = image.img_to_array(test_image)
     test_image = np.expand_dims(test_image, axis=0)
     result = model.predict(test_image)
