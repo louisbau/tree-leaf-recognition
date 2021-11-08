@@ -11,7 +11,11 @@ le programme n'utilise que 15 species car les datas ne sont pas sufficentes
 - Prediction
 
 pas utile : Autre 
+## Graph
+
 ![graph](https://github.com/louisbau/tree-leaf-recognition/blob/main/graph/model_accuracymodel_01.png)
+![graph)(https://github.com/louisbau/tree-leaf-recognition/blob/main/graph/model_lossmodel_01.png)
+
 ## commande ou changement a effectuer
 
 - Ils faut charger les photos qui se trouve dans le archive.zip
