@@ -27,6 +27,27 @@ leaf = []
 sample_count = []
 sample_name = []
 
+def make_list(path, x):
+    dicts = {}
+    for char in os.listdir(path):
+        dicts[char] = len(os.listdir(os.path.join(path, char)))
+    dicts = caer.sort_dict(dicts, descending=True)
+    dict[x] = dicts
+    count = 0
+    tableau = []
+    tableau1 = []
+    tableau2 = []
+    for i in dict[x]:
+        tableau.append(i[0])
+        tableau1.append(i[1])
+        tableau2.append(i[0])
+        count += 1
+        if count >= 15:
+            break
+
+    leaf.append(tableau)
+    sample_count.append(tableau1)
+    sample_name.append(tableau2)
 
 def pull_random_pixels(samples_per_class, pixels_per_sample):
     total_pixels = 15 * samples_per_class * pixels_per_sample
@@ -126,3 +147,18 @@ def Make_prepoccessing():
         plt.axis('off')
 
     plt.show()
+
+def main():
+    make_list(char_path_train, 'train')
+    make_list(char_path_validation, 'validation')
+    pull_random_pixels(10, 50)
+    random_pixels = pull_random_pixels(10, 50)
+
+    plt.figure()
+    plt.suptitle('Random Samples From Each Class', fontsize=14, horizontalalignment='center')
+    plt.imshow(random_pixels)
+    plt.show()
+    Make_prepoccessing()
+
+
+main()
