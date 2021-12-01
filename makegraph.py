@@ -16,12 +16,12 @@ from matplotlib import colors
 
 char_path_train = './Datasets/train'
 char_path_validation = './Datasets/validation'
-models = 'model_02'
+modelse = 'model_18'
 
 IMG_SIZE = (64, 64)
 channels = 1
 BATCH_SIZE = 32
-EPOCHS = 30
+EPOCHS = 50
 dict = {}
 leaf = []
 sample_count = []
@@ -69,7 +69,7 @@ def make_graph_count(x, path, y):
     ax.invert_yaxis()  # labels read top-to-bottom
     ax.set_xlabel('Sample Counts')
     ax.set_title(str(x) + ' Sample Counts Per Class')
-    plt.savefig('graph/sample_count_' + str(x) + str(models) + '.png')
+    plt.savefig('graph/sample_count_' + str(x) + str(modelse) + '.png')
     plt.show()
 
 
@@ -92,29 +92,10 @@ def make_graph_random_sample():
             img = image.img_to_array(img)
             img /= 255.
             plt.imshow(img)
-    plt.savefig('graph/Random_sample_' + str(models) + '.png')
+    plt.savefig('graph/Random_sample_' + str(modelse) + '.png')
     plt.show()
 
 
-def make_graph_accuracy(model, training_set, test_set):
-    History = model.fit(x=training_set, validation_data=test_set, epochs=EPOCHS)
-    plt.plot(History.history['accuracy'])
-    plt.plot(History.history['val_accuracy'])
-    plt.title('model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.savefig('graph/model_accuracy_' + str(models) + '.png')
-    plt.show()
-
-    plt.plot(History.history['loss'])
-    plt.plot(History.history['val_loss'])
-    plt.title('model loss')
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.savefig('graph/model_loss_' + str(models) + '.png')
-    plt.show()
 
 
 def start():

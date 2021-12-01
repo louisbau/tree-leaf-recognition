@@ -10,16 +10,20 @@ from keras.preprocessing import image
 import random
 import shutil
 import makegraph
+import makepreproccesing
+from keras import models, layers, callbacks
+from prettytable import PrettyTable
+import pandas as pd
 
 char_path_train = './Datasets/train'
 char_path_validation = './Datasets/validation'
 char_path_test = './Datasets/test'
-models = 'model_02'
+modelse = 'model_18'
 
 IMG_SIZE = (64, 64)
 channels = 1
 BATCH_SIZE = 32
-EPOCHS = 30
+EPOCHS = 50
 dict = {}
 leaf = []
 sample_count = []
@@ -41,7 +45,7 @@ def make_list(path, x):
         tableau1.append(i[1])
         tableau2.append(i[0])
         count += 1
-        if count >= 15:
+        if count >= 10:
             break
 
     leaf.append(tableau)
@@ -94,27 +98,86 @@ def create_model():
 
 
 def train(model):
-    model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
-
-    train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
-    training_set = train_datagen.flow_from_directory(char_path_train, target_size=IMG_SIZE, batch_size=BATCH_SIZE,
-                                                     class_mode='categorical', classes=leaf[0])
-
+    # train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
     # test image
-    test_datagen = ImageDataGenerator(rescale=1. / 255)
-    test_set = test_datagen.flow_from_directory(char_path_validation, target_size=IMG_SIZE, batch_size=BATCH_SIZE,
-                                                class_mode='categorical', classes=leaf[0])
-    makegraph.make_graph_accuracy(model, training_set, test_set)
-    '''
-    History = model.fit(x=training_set, validation_data=test_set, epochs=EPOCHS)
+    # test_datagen = ImageDataGenerator(rescale=1. / 255)
 
+    train_datagen = image.ImageDataGenerator(
+        rescale=1. / 255,
+        rotation_range=40,
+        width_shift_range=0.0,
+        height_shift_range=0.0,
+        shear_range=0.0,
+        zoom_range=0.0,
+        horizontal_flip=True,
+        vertical_flip=True,
+        # preprocessing_function=makepreproccesing.color_segment_function,
+        fill_mode='nearest')
+    test_datagen = image.ImageDataGenerator(
+        rescale=1. / 255,
+        # preprocessing_function=makepreproccesing.color_segment_function,
+        fill_mode='nearest')
+
+    training_set = train_datagen.flow_from_directory(
+        char_path_train,
+        target_size=IMG_SIZE,
+        batch_size=BATCH_SIZE,
+        class_mode='categorical',
+        classes=leaf[0])
+    test_set = test_datagen.flow_from_directory(
+        char_path_validation,
+        target_size=IMG_SIZE,
+        batch_size=BATCH_SIZE,
+        class_mode='categorical', classes=leaf[0])
+    test_generator = test_datagen.flow_from_directory(
+        char_path_test,
+        target_size=(150, 150),
+        batch_size=1,
+        class_mode='categorical',
+        shuffle=False)
+    label_map = {}
+    for k, v in training_set.class_indices.items():
+        label_map[v] = k
+
+    class_counts = pd.Series(training_set.classes).value_counts()
+    class_weight = {}
+
+    for i, c in class_counts.items():
+        class_weight[i] = 1.0 / c
+
+    norm_factor = np.mean(list(class_weight.values()))
+
+    for k in class_counts.keys():
+        class_weight[k] = class_weight[k] / norm_factor
+
+    t = PrettyTable(['class_index', 'class_label', 'class_weight'])
+    for i in sorted(class_weight.keys()):
+        t.add_row([i, label_map[i], '{:.2f}'.format(class_weight[i])])
+    print(t)
+
+    model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+    h1 = 'model/' + str(modelse) + '.h5'
+    '''
+    best_cb = callbacks.ModelCheckpoint(h1,
+                                        monitor='val_loss',
+                                        verbose=1,
+                                        save_best_only=True,
+                                        save_weights_only=False,
+                                        save_freq='epoch',
+                                        mode='auto')
+    '''
+
+
+
+    History = model.fit(training_set, validation_data=test_set, epochs=EPOCHS, class_weight=class_weight)
+                        #callbacks=[best_cb]
     plt.plot(History.history['accuracy'])
     plt.plot(History.history['val_accuracy'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
-    plt.savefig('graph/model_accuracy_' + str(models) + '.png')
+    plt.savefig('graph/model_accuracy_' + str(modelse) + '.png')
     plt.show()
 
     plt.plot(History.history['loss'])
@@ -123,11 +186,11 @@ def train(model):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
-    plt.savefig('graph/model_loss_' + str(models) + '.png')
+    plt.savefig('graph/model_loss_' + str(modelse) + '.png')
     plt.show()
-    '''
-    model.save_weights('model/' + str(models) + '.h5')
-    print('le model a été sauvegarder comme étant ' + str(models) + '.h5')
+    #model.load_weights('model_best.h5')
+    model.save_weights('model/' + str(modelse) + '.h5')
+    print('le model a été sauvegarder comme étant ' + str(modelse) + '.h5')
 
 
 def main():
@@ -135,27 +198,29 @@ def main():
     make_list(char_path_train, 'train')
     make_list(char_path_validation, 'validation')
     model = create_model()
-    if os.path.exists('model/' + str(models) + '.h5'):
-        model.load_weights('model/' + str(models) + '.h5')
+
+
+    if os.path.exists('model/' + str(modelse) + '.h5'):
+        model.load_weights('model/' + str(modelse) + '.h5')
     else:
         train(model)
-    train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
-    training_set = train_datagen.flow_from_directory(char_path_train, target_size=IMG_SIZE, batch_size=BATCH_SIZE,
-                                                     class_mode='categorical', classes=leaf[0])
+
 
     # test image
-    test_image = image.load_img('Datasets/test/acer_rubrum/pi2608-04-2.jpg', target_size=(64, 64))
+    test_image = image.load_img('Datasets/test/feuille_test/abies_concolor.jpg', target_size=(64, 64))
     test_image = image.img_to_array(test_image)
     test_image = np.expand_dims(test_image, axis=0)
     result = model.predict(test_image)
 
-    print(training_set.class_indices)
+    # print(training_set.class_indices)
+    for i, name in enumerate(leaf[0]):
+        print(i, ' : ', name)
+
     print(result)
     print(leaf[0])
     for i in range(len(result[0])):
-        if result[0][i] == 1:
+        if result[0][i] != 0:
             print(i)
             print("resultat logique : " + str(leaf[0][i] + ', d\'indice ' + str(i)))
-
 
 main()

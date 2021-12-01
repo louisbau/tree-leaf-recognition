@@ -16,16 +16,17 @@ from matplotlib import colors
 
 char_path_train = './Datasets/train'
 char_path_validation = './Datasets/validation'
-models = 'model_02'
+modelse = 'model_18'
 
 IMG_SIZE = (64, 64)
 channels = 1
 BATCH_SIZE = 32
-EPOCHS = 30
+EPOCHS = 50
 dict = {}
 leaf = []
 sample_count = []
 sample_name = []
+
 
 def make_list(path, x):
     dicts = {}
@@ -48,6 +49,7 @@ def make_list(path, x):
     leaf.append(tableau)
     sample_count.append(tableau1)
     sample_name.append(tableau2)
+
 
 def pull_random_pixels(samples_per_class, pixels_per_sample):
     total_pixels = 15 * samples_per_class * pixels_per_sample
@@ -77,7 +79,7 @@ def Make_prepoccessing():
     plt.figure()
     plt.suptitle('Random Samples From Each Class', fontsize=14, horizontalalignment='center')
     plt.imshow(random_pixels)
-    plt.savefig('graph/ramdom_sample_' + str(models) + '.png')
+    plt.savefig('graph/ramdom_sample_' + str(modelse) + '.png')
     plt.show()
 
     r, g, b = cv.split(random_pixels)
@@ -147,6 +149,17 @@ def Make_prepoccessing():
         plt.axis('off')
 
     plt.show()
+
+
+def color_segment_function(img_array):
+    img_array = np.rint(img_array)
+    img_array = img_array.astype('uint8')
+    hsv_img = cv.cvtColor(img_array, cv.COLOR_RGB2HSV)
+    mask = cv.inRange(hsv_img, (24, 50, 0), (55, 255, 255))
+    result = cv.bitwise_and(img_array, img_array, mask=mask)
+    result = result.astype('float64')
+    return result
+
 
 def main():
     make_list(char_path_train, 'train')
