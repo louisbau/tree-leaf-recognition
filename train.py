@@ -13,7 +13,8 @@ import pandas as pd
 char_path_train = './Datasets/train'
 char_path_validation = './Datasets/validation'
 char_path_test = './Datasets/test'
-modelse = 'model_21'
+model_version = 22
+modelse = 'model_' + str(model_version)
 
 IMG_SIZE = (64, 64)
 channels = 1
@@ -26,15 +27,17 @@ sample_name = []
 class_weight = {}
 label_map = {}
 
+
 # TODO  : create_validation(), weigth(), main 2 partie,
 # VALIDE : make_list, create_model, train, main 1 partie
+
 def make_list(path, x):
-    '''
+    """
     cette fonction 3 tableau (leaf, sample_count, sample_name) pour pouvoir mieux accèder au sample
     :param path:
     :param x:
     :return:
-    '''
+    """
     dicts = {}
     for char in os.listdir(path):
         dicts[char] = len(os.listdir(os.path.join(path, char)))
@@ -61,11 +64,11 @@ def make_list(path, x):
 
 
 def create_validation(validation_split):
-    '''
+    """
     cette fonction creer un dossier avec 20% des feuilles qui se trouve dans le dossier TRAIN
     :param validation_split:
     :return:
-    '''
+    """
     if os.path.isdir(char_path_validation):
         print('Validation directory already created!')
         print('Process Terminated')
@@ -85,10 +88,10 @@ def create_validation(validation_split):
 
 
 def create_model():
-    '''
+    """
     cette fonction défini le modele
     :return:
-    '''
+    """
     cnn = tf.keras.models.Sequential()
 
     cnn.add(tf.keras.layers.Conv2D(filters=64, kernel_size=3, activation='relu', input_shape=[64, 64, 3]))
@@ -110,11 +113,11 @@ def create_model():
 
 
 def weigth(training_set):
-    '''
-
+    """
+    Focntion qui calcule le poid de chacune des classes
     :param training_set:
     :return:
-    '''
+    """
     for k, v in training_set.class_indices.items():
         label_map[v] = k
 
@@ -134,12 +137,12 @@ def weigth(training_set):
     print(t)
 
 
-def train(model):
-    '''
+def train(model, x):
+    """
     Fonction
     :param model:
     :return:
-    '''
+    """
     train_datagen = image.ImageDataGenerator(
         rescale=1. / 255,
         rotation_range=40,
@@ -169,21 +172,27 @@ def train(model):
         class_mode='categorical', classes=leaf[0])
 
     weigth(training_set)
-    model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
-    History = model.fit(training_set, validation_data=test_set, epochs=EPOCHS, class_weight=class_weight)
+    if not x:
+        model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+        History = model.fit(training_set, validation_data=test_set, epochs=EPOCHS, class_weight=class_weight)
 
-    makegraph.make_graph_accuracy(History, modelse)
-    makegraph.make_graph_loss(History, modelse)
+        makegraph.make_graph_accuracy(History, modelse)
+        makegraph.make_graph_loss(History, modelse)
 
-    model.save_weights('model/' + str(modelse) + '.h5')
-    print('le model a été sauvegarder comme étant ' + str(modelse) + '.h5')
+        model.save_weights('model/' + str(modelse) + '.h5')
+        print('le model a été sauvegarder comme étant ' + str(modelse) + '.h5')
 
 
 def main():
-    '''
-
+    """
+    Fonction principale qui séquence le programme
+    1. Préparation des données
+    2. La visualisation des donnéesà l'aide de graph
+    3.
     :return:
-    '''
+    """
+    if not os.path.exists('./graph/' + str(modelse)):
+        os.mkdir('./graph/' + str(modelse))
     # Préparation des données
     create_validation(0.2)
     make_list(char_path_train, 'train')
@@ -202,10 +211,10 @@ def main():
     model = create_model()
     if os.path.exists('model/' + str(modelse) + '.h5'):
         model.load_weights('model/' + str(modelse) + '.h5')
+        train(model, True)
     else:
-        train(model)
+        train(model, False)
 
-    # test des feuilles
     test_datagen = image.ImageDataGenerator(
         rescale=1. / 255,
         # preprocessing_function=makepreproccesing.color_segment_function,
@@ -218,7 +227,8 @@ def main():
         class_mode='categorical',
         shuffle=False)
 
-
+    # PREDICTION
+    print('---- Résultat de la prédiction -----')
     result = model.predict(test_generator, steps=test_generator.n, verbose=1)
     predicted_class_indices = np.argmax(result, axis=1)
     prediction_labels = [label_map[k] for k in predicted_class_indices]
@@ -233,4 +243,5 @@ def main():
     print(t)
 
 
-main()
+if __name__ == '__main__':
+    main()

@@ -31,7 +31,7 @@ def make_graph_count(x, y, leaf, sample_count, sample_name, modelse):
     ax.invert_yaxis()  # labels read top-to-bottom
     ax.set_xlabel('Sample Counts')
     ax.set_title(str(x) + ' Sample Counts Per Class')
-    plt.savefig('graph/sample_count_' + str(x) + str(modelse) + '.png')
+    plt.savefig('graph/' + str(modelse) + '/sample_count_' + str(x) + str(modelse) + '.png')
     plt.show()
 
 
@@ -48,7 +48,7 @@ def make_graph_accuracy(History, modelse):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
-    plt.savefig('graph/model_accuracy_' + str(modelse) + '.png')
+    plt.savefig('graph/' + str(modelse) + '/model_accuracy_' + str(modelse) + '.png')
     plt.show()
 
 
@@ -65,7 +65,7 @@ def make_graph_loss(History, modelse):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
-    plt.savefig('graph/model_loss_' + str(modelse) + '.png')
+    plt.savefig('graph/' + str(modelse) + '/model_loss_' + str(modelse) + '.png')
     plt.show()
 
 
@@ -95,7 +95,7 @@ def make_graph_random_sample(char_path_train, sample_name, modelse):
             img = image.img_to_array(img)
             img /= 255.
             plt.imshow(img)
-    plt.savefig('graph/Random_sample_' + str(modelse) + '.png')
+    plt.savefig('graph/' + str(modelse) + '/Random_sample_' + str(modelse) + '.png')
     plt.show()
 
 

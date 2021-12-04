@@ -58,7 +58,7 @@ def Make_prepoccessing(modelse, char_path_train, leaf):
     plt.figure()
     plt.suptitle('Random Samples From Each Class', fontsize=14, horizontalalignment='center')
     plt.imshow(random_pixels)
-    plt.savefig('graph/ramdom_sample_' + str(modelse) + '.png')
+    plt.savefig('graph/' + str(modelse) + '/ramdom_sample_' + str(modelse) + '.png')
     plt.show()
 
     r, g, b = cv.split(random_pixels)

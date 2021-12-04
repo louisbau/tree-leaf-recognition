@@ -7,8 +7,6 @@ from tkinter import *
 # create the root window
 root = tk.Tk()
 root.title('Reconnaissances des feuilles d\'arbres')
-label = Label(root, text="5 min a faire DODIE")
-label.pack()
 root.resizable(False, False)
 root.geometry('600x750')
 
