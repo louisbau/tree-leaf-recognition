@@ -30,7 +30,7 @@ pas utile : Autre
 - peut etre utiliser jupiter
 
 ### source : 
-
+- https://github.com/Reedr1208/seedling_classification/blob/master/Seedling_Classification.ipynb
 - https://www.youtube.com/watch?v=oXlwWbU8l2o
 
 - https://github.com/julzerinos/python-opencv-leaf-detection

@@ -3,14 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.preprocessing import image
 import random
-import makepreproccesing
 
 
 # https://github.com/Reedr1208/seedling_classification/blob/master/Seedling_Classification.ipynb
 
 def make_graph_count(x, y, leaf, sample_count, sample_name, modelse):
-    '''
-
+    """
+    fonction qui affiche le nombre de sample par classe
     :param x:
     :param y:
     :param leaf:
@@ -18,7 +17,7 @@ def make_graph_count(x, y, leaf, sample_count, sample_name, modelse):
     :param sample_name:
     :param modelse:
     :return:
-    '''
+    """
     plt.rcdefaults()
     fig, ax = plt.subplots()
 
@@ -36,12 +35,12 @@ def make_graph_count(x, y, leaf, sample_count, sample_name, modelse):
 
 
 def make_graph_accuracy(History, modelse):
-    '''
-
+    """
+    fonction qui affiche la précision du training
     :param History:
     :param modelse:
     :return:
-    '''
+    """
     plt.plot(History.history['accuracy'])
     plt.plot(History.history['val_accuracy'])
     plt.title('model accuracy')
@@ -53,12 +52,12 @@ def make_graph_accuracy(History, modelse):
 
 
 def make_graph_loss(History, modelse):
-    '''
-
+    """
+    fonction qui affiche les pertes du training
     :param History:
     :param modelse:
     :return:
-    '''
+    """
     plt.plot(History.history['loss'])
     plt.plot(History.history['val_loss'])
     plt.title('model loss')
@@ -70,18 +69,18 @@ def make_graph_loss(History, modelse):
 
 
 def make_graph_random_sample(char_path_train, sample_name, modelse):
-    '''
-
+    """
+    fonction qui affiche differentes feuilles associées a une classe
     :param char_path_train:
     :param sample_name:
     :param modelse:
     :return:
-    '''
+    """
     fig = plt.figure(figsize=(10, 15))
     fig.suptitle('Random Samples From Each Class', fontsize=14, y=.92, horizontalalignment='center', weight='bold')
     columns = 5
-    rows = 12
-    for i in range(12):
+    rows = 10
+    for i in range(10):
         sample_class = os.path.join(char_path_train, sample_name[0][i])
         for j in range(1, 6):
             fig.add_subplot(rows, columns, i * 5 + j)
@@ -90,7 +89,6 @@ def make_graph_random_sample(char_path_train, sample_name, modelse):
                 plt.text(0.0, 0.5, str(sample_name[0][i]).replace(' ', '\n'), fontsize=13, wrap=True)
                 continue
             random_image = os.path.join(sample_class, random.choice(os.listdir(sample_class)))
-            # from keras.preprocessing.image
             img = image.load_img(random_image, target_size=(150, 150))
             img = image.img_to_array(img)
             img /= 255.
@@ -98,16 +96,3 @@ def make_graph_random_sample(char_path_train, sample_name, modelse):
     plt.savefig('graph/' + str(modelse) + '/Random_sample_' + str(modelse) + '.png')
     plt.show()
 
-
-def display_random_sample(char_path_train, leaf):
-    '''
-
-    :param char_path_train:
-    :param leaf:
-    :return:
-    '''
-    random_pixels = makepreproccesing.pull_random_pixels(10, 50, char_path_train, leaf)
-    plt.figure()
-    plt.suptitle('Random Samples From Each Class', fontsize=14, horizontalalignment='center')
-    plt.imshow(random_pixels)
-    plt.show()

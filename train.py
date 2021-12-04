@@ -13,7 +13,7 @@ import pandas as pd
 char_path_train = './Datasets/train'
 char_path_validation = './Datasets/validation'
 char_path_test = './Datasets/test'
-model_version = 22
+model_version = 24
 modelse = 'model_' + str(model_version)
 
 IMG_SIZE = (64, 64)
@@ -33,7 +33,7 @@ label_map = {}
 
 def make_list(path, x):
     """
-    cette fonction 3 tableau (leaf, sample_count, sample_name) pour pouvoir mieux accèder au sample
+    cette fonction remplie 3 tableau (leaf, sample_count, sample_name) qui vont facilité l'accès au image et à leur tri
     :param path:
     :param x:
     :return:
@@ -52,7 +52,7 @@ def make_list(path, x):
         tableau1.append(i[1])
         tableau2.append(i[0])
         count += 1
-        if count >= 12:
+        if count >= 10:
             break
 
     leaf.append(tableau)
@@ -60,12 +60,9 @@ def make_list(path, x):
     sample_name.append(tableau2)
 
 
-# https://github.com/Reedr1208/seedling_classification/blob/master/Seedling_Classification.ipynb
-
-
 def create_validation(validation_split):
     """
-    cette fonction creer un dossier avec 20% des feuilles qui se trouve dans le dossier TRAIN
+    cette fonction créer un dossier avec 20% des feuilles qui se trouve dans le dossier TRAIN
     :param validation_split:
     :return:
     """
@@ -89,7 +86,7 @@ def create_validation(validation_split):
 
 def create_model():
     """
-    cette fonction défini le modele
+    cette fonction défini le model que nous allons utilisé (2 layers)
     :return:
     """
     cnn = tf.keras.models.Sequential()
@@ -114,7 +111,7 @@ def create_model():
 
 def weigth(training_set):
     """
-    Focntion qui calcule le poid de chacune des classes
+    Fonction qui calcule le poid de chacune des classes
     :param training_set:
     :return:
     """
@@ -137,27 +134,42 @@ def weigth(training_set):
     print(t)
 
 
-def train(model, x):
+def train(model, x, background):
     """
-    Fonction
+    Fonction a définir TODO
     :param model:
     :return:
     """
-    train_datagen = image.ImageDataGenerator(
-        rescale=1. / 255,
-        rotation_range=40,
-        width_shift_range=0.0,
-        height_shift_range=0.0,
-        shear_range=0.0,
-        zoom_range=0.0,
-        horizontal_flip=True,
-        vertical_flip=True,
-        # preprocessing_function=makepreproccesing.color_segment_function,
-        fill_mode='nearest')
-    test_datagen = image.ImageDataGenerator(
-        rescale=1. / 255,
-        # preprocessing_function=makepreproccesing.color_segment_function,
-        fill_mode='nearest')
+    if background:
+        train_datagen = image.ImageDataGenerator(
+            rescale=1. / 255,
+            rotation_range=40,
+            width_shift_range=0.0,
+            height_shift_range=0.0,
+            shear_range=0.0,
+            zoom_range=0.0,
+            horizontal_flip=True,
+            vertical_flip=True,
+            preprocessing_function=makepreproccesing.color_segment_function,
+            fill_mode='nearest')
+        test_datagen = image.ImageDataGenerator(
+            rescale=1. / 255,
+            preprocessing_function=makepreproccesing.color_segment_function,
+            fill_mode='nearest')
+    else:
+        train_datagen = image.ImageDataGenerator(
+            rescale=1. / 255,
+            rotation_range=40,
+            width_shift_range=0.0,
+            height_shift_range=0.0,
+            shear_range=0.0,
+            zoom_range=0.0,
+            horizontal_flip=True,
+            vertical_flip=True,
+            fill_mode='nearest')
+        test_datagen = image.ImageDataGenerator(
+            rescale=1. / 255,
+            fill_mode='nearest')
 
     training_set = train_datagen.flow_from_directory(
         char_path_train,
@@ -178,8 +190,10 @@ def train(model, x):
 
         makegraph.make_graph_accuracy(History, modelse)
         makegraph.make_graph_loss(History, modelse)
-
-        model.save_weights('model/' + str(modelse) + '.h5')
+        if background:
+            model.save_weights('model/background/' + str(modelse) + '.h5')
+        else:
+            model.save_weights('model/normal/' + str(modelse) + '.h5')
         print('le model a été sauvegarder comme étant ' + str(modelse) + '.h5')
 
 
@@ -187,12 +201,20 @@ def main():
     """
     Fonction principale qui séquence le programme
     1. Préparation des données
-    2. La visualisation des donnéesà l'aide de graph
-    3.
+    2. La visualisation des données à l'aide de graph
+    3. Creer un nouveau model
+    4  charge le model si il a été train || Sinon le train s'effectue et affiche sont efficacité
+    5. lance la prediction et affiche les resultat
     :return:
     """
+    background = False
+    if not os.path.exists('./model/background'):
+        os.mkdir('./model/background')
+    if not os.path.exists('./model/normal'):
+        os.mkdir('./model/normal')
     if not os.path.exists('./graph/' + str(modelse)):
         os.mkdir('./graph/' + str(modelse))
+
     # Préparation des données
     create_validation(0.2)
     make_list(char_path_train, 'train')
@@ -202,23 +224,36 @@ def main():
     makegraph.make_graph_count('train', 0, leaf, sample_count, sample_name, modelse)
     makegraph.make_graph_count('validation', 1, leaf, sample_count, sample_name, modelse)
     makegraph.make_graph_random_sample(char_path_train, sample_name, modelse)
-    makegraph.display_random_sample(char_path_train, leaf)
 
-    # Création du préproccessing
-    makepreproccesing.Make_prepoccessing(modelse, char_path_train, leaf)
-
+    # Création du préprocessing
+    makepreproccesing.make_prepoccessing(modelse, char_path_train, leaf)
+    if input("Voulez vous utilisé la méthode avec background (pas optimisé) y ou n : ") == 'y':
+        background = True
     # Création du model
     model = create_model()
-    if os.path.exists('model/' + str(modelse) + '.h5'):
-        model.load_weights('model/' + str(modelse) + '.h5')
-        train(model, True)
+    if background:
+        if os.path.exists('model/background/' + str(modelse) + '.h5'):
+            model.load_weights('model/background/' + str(modelse) + '.h5')
+            train(model, True, background)
+        else:
+            train(model, False, background)
     else:
-        train(model, False)
+        if os.path.exists('model/normal/' + str(modelse) + '.h5'):
+            model.load_weights('model/normal/' + str(modelse) + '.h5')
+            train(model, True, background)
+        else:
+            train(model, False, background)
 
-    test_datagen = image.ImageDataGenerator(
-        rescale=1. / 255,
-        # preprocessing_function=makepreproccesing.color_segment_function,
-        fill_mode='nearest')
+    if background:
+        test_datagen = image.ImageDataGenerator(
+            rescale=1. / 255,
+            preprocessing_function=makepreproccesing.color_segment_function,
+            fill_mode='nearest')
+    else:
+        test_datagen = image.ImageDataGenerator(
+            rescale=1. / 255,
+            # preprocessing_function=makepreproccesing.color_segment_function,
+            fill_mode='nearest')
 
     test_generator = test_datagen.flow_from_directory(
         char_path_test,
