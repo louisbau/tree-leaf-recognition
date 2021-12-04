@@ -1,24 +1,19 @@
-import cv2 as cv
 import os
 import numpy as np
-import pickle
-import matplotlib.pyplot as plt
 import caer
-from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 from keras.preprocessing import image
 import random
 import shutil
 import makegraph
 import makepreproccesing
-from keras import models, layers, callbacks
 from prettytable import PrettyTable
 import pandas as pd
 
 char_path_train = './Datasets/train'
 char_path_validation = './Datasets/validation'
 char_path_test = './Datasets/test'
-modelse = 'model_18'
+modelse = 'model_21'
 
 IMG_SIZE = (64, 64)
 channels = 1
@@ -28,9 +23,18 @@ dict = {}
 leaf = []
 sample_count = []
 sample_name = []
+class_weight = {}
+label_map = {}
 
-
+# TODO  : create_validation(), weigth(), main 2 partie,
+# VALIDE : make_list, create_model, train, main 1 partie
 def make_list(path, x):
+    '''
+    cette fonction 3 tableau (leaf, sample_count, sample_name) pour pouvoir mieux accèder au sample
+    :param path:
+    :param x:
+    :return:
+    '''
     dicts = {}
     for char in os.listdir(path):
         dicts[char] = len(os.listdir(os.path.join(path, char)))
@@ -45,7 +49,7 @@ def make_list(path, x):
         tableau1.append(i[1])
         tableau2.append(i[0])
         count += 1
-        if count >= 10:
+        if count >= 12:
             break
 
     leaf.append(tableau)
@@ -57,6 +61,11 @@ def make_list(path, x):
 
 
 def create_validation(validation_split):
+    '''
+    cette fonction creer un dossier avec 20% des feuilles qui se trouve dans le dossier TRAIN
+    :param validation_split:
+    :return:
+    '''
     if os.path.isdir(char_path_validation):
         print('Validation directory already created!')
         print('Process Terminated')
@@ -76,9 +85,11 @@ def create_validation(validation_split):
 
 
 def create_model():
+    '''
+    cette fonction défini le modele
+    :return:
+    '''
     cnn = tf.keras.models.Sequential()
-
-    # building convolution layer
 
     cnn.add(tf.keras.layers.Conv2D(filters=64, kernel_size=3, activation='relu', input_shape=[64, 64, 3]))
     cnn.add(tf.keras.layers.MaxPool2D(pool_size=2, strides=2))
@@ -93,15 +104,42 @@ def create_model():
     cnn.add(tf.keras.layers.Dense(units=128, activation='relu'))
 
     cnn.add(tf.keras.layers.Dense(units=len(leaf[0]), activation='softmax'))
+    cnn.summary()
 
     return cnn
 
 
-def train(model):
-    # train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
-    # test image
-    # test_datagen = ImageDataGenerator(rescale=1. / 255)
+def weigth(training_set):
+    '''
 
+    :param training_set:
+    :return:
+    '''
+    for k, v in training_set.class_indices.items():
+        label_map[v] = k
+
+    class_counts = pd.Series(training_set.classes).value_counts()
+
+    for i, c in class_counts.items():
+        class_weight[i] = 1.0 / c
+
+    norm_factor = np.mean(list(class_weight.values()))
+
+    for k in class_counts.keys():
+        class_weight[k] = class_weight[k] / norm_factor
+
+    t = PrettyTable(['class_index', 'class_label', 'class_weight'])
+    for i in sorted(class_weight.keys()):
+        t.add_row([i, label_map[i], '{:.2f}'.format(class_weight[i])])
+    print(t)
+
+
+def train(model):
+    '''
+    Fonction
+    :param model:
+    :return:
+    '''
     train_datagen = image.ImageDataGenerator(
         rescale=1. / 255,
         rotation_range=40,
@@ -129,98 +167,70 @@ def train(model):
         target_size=IMG_SIZE,
         batch_size=BATCH_SIZE,
         class_mode='categorical', classes=leaf[0])
-    test_generator = test_datagen.flow_from_directory(
-        char_path_test,
-        target_size=(150, 150),
-        batch_size=1,
-        class_mode='categorical',
-        shuffle=False)
-    label_map = {}
-    for k, v in training_set.class_indices.items():
-        label_map[v] = k
 
-    class_counts = pd.Series(training_set.classes).value_counts()
-    class_weight = {}
-
-    for i, c in class_counts.items():
-        class_weight[i] = 1.0 / c
-
-    norm_factor = np.mean(list(class_weight.values()))
-
-    for k in class_counts.keys():
-        class_weight[k] = class_weight[k] / norm_factor
-
-    t = PrettyTable(['class_index', 'class_label', 'class_weight'])
-    for i in sorted(class_weight.keys()):
-        t.add_row([i, label_map[i], '{:.2f}'.format(class_weight[i])])
-    print(t)
-
+    weigth(training_set)
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
-    h1 = 'model/' + str(modelse) + '.h5'
-    '''
-    best_cb = callbacks.ModelCheckpoint(h1,
-                                        monitor='val_loss',
-                                        verbose=1,
-                                        save_best_only=True,
-                                        save_weights_only=False,
-                                        save_freq='epoch',
-                                        mode='auto')
-    '''
-
-
-
     History = model.fit(training_set, validation_data=test_set, epochs=EPOCHS, class_weight=class_weight)
-                        #callbacks=[best_cb]
-    plt.plot(History.history['accuracy'])
-    plt.plot(History.history['val_accuracy'])
-    plt.title('model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.savefig('graph/model_accuracy_' + str(modelse) + '.png')
-    plt.show()
 
-    plt.plot(History.history['loss'])
-    plt.plot(History.history['val_loss'])
-    plt.title('model loss')
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.savefig('graph/model_loss_' + str(modelse) + '.png')
-    plt.show()
-    #model.load_weights('model_best.h5')
+    makegraph.make_graph_accuracy(History, modelse)
+    makegraph.make_graph_loss(History, modelse)
+
     model.save_weights('model/' + str(modelse) + '.h5')
     print('le model a été sauvegarder comme étant ' + str(modelse) + '.h5')
 
 
 def main():
+    '''
+
+    :return:
+    '''
+    # Préparation des données
     create_validation(0.2)
     make_list(char_path_train, 'train')
     make_list(char_path_validation, 'validation')
+
+    # Création des graph
+    makegraph.make_graph_count('train', 0, leaf, sample_count, sample_name, modelse)
+    makegraph.make_graph_count('validation', 1, leaf, sample_count, sample_name, modelse)
+    makegraph.make_graph_random_sample(char_path_train, sample_name, modelse)
+    makegraph.display_random_sample(char_path_train, leaf)
+
+    # Création du préproccessing
+    makepreproccesing.Make_prepoccessing(modelse, char_path_train, leaf)
+
+    # Création du model
     model = create_model()
-
-
     if os.path.exists('model/' + str(modelse) + '.h5'):
         model.load_weights('model/' + str(modelse) + '.h5')
     else:
         train(model)
 
+    # test des feuilles
+    test_datagen = image.ImageDataGenerator(
+        rescale=1. / 255,
+        # preprocessing_function=makepreproccesing.color_segment_function,
+        fill_mode='nearest')
 
-    # test image
-    test_image = image.load_img('Datasets/test/feuille_test/abies_concolor.jpg', target_size=(64, 64))
-    test_image = image.img_to_array(test_image)
-    test_image = np.expand_dims(test_image, axis=0)
-    result = model.predict(test_image)
+    test_generator = test_datagen.flow_from_directory(
+        char_path_test,
+        target_size=IMG_SIZE,
+        batch_size=1,
+        class_mode='categorical',
+        shuffle=False)
 
-    # print(training_set.class_indices)
-    for i, name in enumerate(leaf[0]):
-        print(i, ' : ', name)
 
-    print(result)
-    print(leaf[0])
-    for i in range(len(result[0])):
-        if result[0][i] != 0:
-            print(i)
-            print("resultat logique : " + str(leaf[0][i] + ', d\'indice ' + str(i)))
+    result = model.predict(test_generator, steps=test_generator.n, verbose=1)
+    predicted_class_indices = np.argmax(result, axis=1)
+    prediction_labels = [label_map[k] for k in predicted_class_indices]
+    filenames = test_generator.filenames
+    headers = ['file', 'species']
+    t = PrettyTable(headers)
+    for i, f, p in zip(range(len(filenames)), filenames, prediction_labels):
+        if i < 10:
+            t.add_row([os.path.basename(f), p])
+        elif i < 13:
+            t.add_row(['.', '.'])
+    print(t)
+
 
 main()

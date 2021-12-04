@@ -62,3 +62,25 @@
         use_multiprocessing=True,
         callbacks=[best_cb])
     '''
+
+'''
+    # print(training_set.class_indices)
+    for i, name in enumerate(leaf[0]):
+        print(i, ' : ', name)
+
+    print(result)
+    print(leaf[0])
+    for i in range(len(result[0])):
+        if result[0][i] != 0:
+            print(i)
+            print("resultat logique : " + str(leaf[0][i] + ', d\'indice ' + str(i)))
+
+    '''
+
+'''
+
+    test_image = image.load_img('Datasets/test/feuille_test/abies_concolor.jpg', target_size=(64, 64))
+    test_image = image.img_to_array(test_image)
+    test_image = np.expand_dims(test_image, axis=0)
+    result = model.predict(test_image)
+    '''

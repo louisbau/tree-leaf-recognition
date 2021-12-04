@@ -1,62 +1,24 @@
-import cv2 as cv
 import os
 import numpy as np
-import pickle
 import matplotlib.pyplot as plt
-import caer
-from keras.preprocessing.image import ImageDataGenerator
-import tensorflow as tf
 from keras.preprocessing import image
 import random
-import shutil
-from math import sqrt, floor
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
-from matplotlib import colors
-
-char_path_train = './Datasets/train'
-char_path_validation = './Datasets/validation'
-modelse = 'model_18'
-
-IMG_SIZE = (64, 64)
-channels = 1
-BATCH_SIZE = 32
-EPOCHS = 50
-dict = {}
-leaf = []
-sample_count = []
-sample_name = []
-
-def make_list(path, x):
-    dicts = {}
-    for char in os.listdir(path):
-        dicts[char] = len(os.listdir(os.path.join(path, char)))
-    dicts = caer.sort_dict(dicts, descending=True)
-    dict[x] = dicts
-    count = 0
-    tableau = []
-    tableau1 = []
-    tableau2 = []
-    for i in dict[x]:
-        tableau.append(i[0])
-        tableau1.append(i[1])
-        tableau2.append(i[0])
-        count += 1
-        if count >= 15:
-            break
-
-    leaf.append(tableau)
-    sample_count.append(tableau1)
-    sample_name.append(tableau2)
-
-
-
-
+import makepreproccesing
 
 
 # https://github.com/Reedr1208/seedling_classification/blob/master/Seedling_Classification.ipynb
 
-def make_graph_count(x, path, y):
+def make_graph_count(x, y, leaf, sample_count, sample_name, modelse):
+    '''
+
+    :param x:
+    :param y:
+    :param leaf:
+    :param sample_count:
+    :param sample_name:
+    :param modelse:
+    :return:
+    '''
     plt.rcdefaults()
     fig, ax = plt.subplots()
 
@@ -73,7 +35,48 @@ def make_graph_count(x, path, y):
     plt.show()
 
 
-def make_graph_random_sample():
+def make_graph_accuracy(History, modelse):
+    '''
+
+    :param History:
+    :param modelse:
+    :return:
+    '''
+    plt.plot(History.history['accuracy'])
+    plt.plot(History.history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'val'], loc='upper left')
+    plt.savefig('graph/model_accuracy_' + str(modelse) + '.png')
+    plt.show()
+
+
+def make_graph_loss(History, modelse):
+    '''
+
+    :param History:
+    :param modelse:
+    :return:
+    '''
+    plt.plot(History.history['loss'])
+    plt.plot(History.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'val'], loc='upper left')
+    plt.savefig('graph/model_loss_' + str(modelse) + '.png')
+    plt.show()
+
+
+def make_graph_random_sample(char_path_train, sample_name, modelse):
+    '''
+
+    :param char_path_train:
+    :param sample_name:
+    :param modelse:
+    :return:
+    '''
     fig = plt.figure(figsize=(10, 15))
     fig.suptitle('Random Samples From Each Class', fontsize=14, y=.92, horizontalalignment='center', weight='bold')
     columns = 5
@@ -96,13 +99,15 @@ def make_graph_random_sample():
     plt.show()
 
 
+def display_random_sample(char_path_train, leaf):
+    '''
 
-
-def start():
-    make_list(char_path_train, 'train')
-    make_list(char_path_validation, 'validation')
-    make_graph_count('train', char_path_train, 0)
-    make_graph_count('validation', char_path_validation, 1)
-    make_graph_random_sample()
-
-start()
+    :param char_path_train:
+    :param leaf:
+    :return:
+    '''
+    random_pixels = makepreproccesing.pull_random_pixels(10, 50, char_path_train, leaf)
+    plt.figure()
+    plt.suptitle('Random Samples From Each Class', fontsize=14, horizontalalignment='center')
+    plt.imshow(random_pixels)
+    plt.show()

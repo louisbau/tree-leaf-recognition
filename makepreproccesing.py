@@ -14,47 +14,19 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib import colors
 
-char_path_train = './Datasets/train'
-char_path_validation = './Datasets/validation'
-modelse = 'model_18'
 
-IMG_SIZE = (64, 64)
-channels = 1
-BATCH_SIZE = 32
-EPOCHS = 50
-dict = {}
-leaf = []
-sample_count = []
-sample_name = []
+def pull_random_pixels(samples_per_class, pixels_per_sample, char_path_train, leaf):
+    '''
 
-
-def make_list(path, x):
-    dicts = {}
-    for char in os.listdir(path):
-        dicts[char] = len(os.listdir(os.path.join(path, char)))
-    dicts = caer.sort_dict(dicts, descending=True)
-    dict[x] = dicts
-    count = 0
-    tableau = []
-    tableau1 = []
-    tableau2 = []
-    for i in dict[x]:
-        tableau.append(i[0])
-        tableau1.append(i[1])
-        tableau2.append(i[0])
-        count += 1
-        if count >= 15:
-            break
-
-    leaf.append(tableau)
-    sample_count.append(tableau1)
-    sample_name.append(tableau2)
-
-
-def pull_random_pixels(samples_per_class, pixels_per_sample):
-    total_pixels = 15 * samples_per_class * pixels_per_sample
+    :param samples_per_class:
+    :param pixels_per_sample:
+    :param char_path_train:
+    :param leaf:
+    :return:
+    '''
+    total_pixels = len(leaf[0]) * samples_per_class * pixels_per_sample
     random_pixels = np.zeros((total_pixels, 3), dtype=np.uint8)
-    for i in range(15):
+    for i in range(len(leaf[0])):
         sample_class = os.path.join(char_path_train, leaf[0][i])
         for j in range(samples_per_class):
             random_image = os.path.join(sample_class, random.choice(os.listdir(sample_class)))
@@ -74,8 +46,15 @@ def pull_random_pixels(samples_per_class, pixels_per_sample):
     return random_pixels
 
 
-def Make_prepoccessing():
-    random_pixels = pull_random_pixels(10, 50)
+def Make_prepoccessing(modelse, char_path_train, leaf):
+    '''
+
+    :param modelse:
+    :param char_path_train:
+    :param leaf:
+    :return:
+    '''
+    random_pixels = pull_random_pixels(10, 50, char_path_train, leaf)
     plt.figure()
     plt.suptitle('Random Samples From Each Class', fontsize=14, horizontalalignment='center')
     plt.imshow(random_pixels)
@@ -152,6 +131,11 @@ def Make_prepoccessing():
 
 
 def color_segment_function(img_array):
+    '''
+
+    :param img_array:
+    :return:
+    '''
     img_array = np.rint(img_array)
     img_array = img_array.astype('uint8')
     hsv_img = cv.cvtColor(img_array, cv.COLOR_RGB2HSV)
@@ -159,19 +143,3 @@ def color_segment_function(img_array):
     result = cv.bitwise_and(img_array, img_array, mask=mask)
     result = result.astype('float64')
     return result
-
-
-def main():
-    make_list(char_path_train, 'train')
-    make_list(char_path_validation, 'validation')
-    pull_random_pixels(10, 50)
-    random_pixels = pull_random_pixels(10, 50)
-
-    plt.figure()
-    plt.suptitle('Random Samples From Each Class', fontsize=14, horizontalalignment='center')
-    plt.imshow(random_pixels)
-    plt.show()
-    Make_prepoccessing()
-
-
-main()
