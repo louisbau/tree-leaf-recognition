@@ -10,22 +10,22 @@ import makepreproccesing
 from prettytable import PrettyTable
 import pandas as pd
 
-char_path_train = './Datasets/train'
-char_path_validation = './Datasets/validation'
-char_path_test = './Datasets/test'
-model_version = 25
-modelse = 'model_' + str(model_version)
+char_path_train = './Datasets/train'  # chemin vers le dossier train
+char_path_validation = './Datasets/validation'  # chemin vers le dossier validation
+char_path_test = './Datasets/test'  # chemin vers le dossier test
+model_version = 25  # la version du modèle
+modelse = 'model_' + str(model_version)  # nom complet du model
 
-IMG_SIZE = (64, 64)
+IMG_SIZE = (64, 64)  # resize des images
 channels = 1
 BATCH_SIZE = 32
 EPOCHS = 50
 dict = {}
-leaf = []
-sample_count = []
-sample_name = []
-class_weight = {}
-label_map = {}
+leaf = []  # tableau comportant les feuilles de train et validation
+sample_count = []  # tableau comportant le nombre de feuilles par famille de train et validation
+sample_name = []  # tableau comportant les noms des feuilles de train et validation
+class_weight = {}  # dictionnaire comportant les poids des feuilles de train et validation
+label_map = {}  # dictionnaire comportant les index et nom des feuilles de train et validation
 
 
 # TODO  : create_validation(), weigth(), main 2 partie,
