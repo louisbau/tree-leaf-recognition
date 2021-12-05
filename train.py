@@ -208,6 +208,8 @@ def main():
     :return:
     """
     background = False
+    if not os.path.exists('./model'):
+        os.mkdir('./model')
     if not os.path.exists('./model/background'):
         os.mkdir('./model/background')
     if not os.path.exists('./model/normal'):
