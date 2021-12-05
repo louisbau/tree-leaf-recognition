@@ -13,7 +13,7 @@ import pandas as pd
 char_path_train = './Datasets/train'
 char_path_validation = './Datasets/validation'
 char_path_test = './Datasets/test'
-model_version = 24
+model_version = 25
 modelse = 'model_' + str(model_version)
 
 IMG_SIZE = (64, 64)
@@ -221,6 +221,13 @@ def main():
     create_validation(0.2)
     make_list(char_path_train, 'train')
     make_list(char_path_validation, 'validation')
+    print('leaf: ')
+    print(leaf)
+    print('sample name: ')
+    print(sample_name)
+    print('sample count: ')
+    print(sample_count)
+
 
     # Création des graph
     makegraph.make_graph_count('train', 0, leaf, sample_count, sample_name, modelse)
