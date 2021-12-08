@@ -214,6 +214,10 @@ def main():
     background = False
     if not os.path.exists('./model'):
         os.mkdir('./model')
+    if not os.path.exists('./graph'):
+        os.mkdir('./graph')
+    if not os.path.exists('./Datasets'):
+        os.mkdir('./Datasets')
     if not os.path.exists('./model/background'):
         os.mkdir('./model/background')
     if not os.path.exists('./model/normal'):
