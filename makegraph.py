@@ -70,7 +70,7 @@ def make_graph_loss(History, modelse):
 
 def make_graph_random_sample(char_path_train, sample_name, modelse):
     """
-    fonction qui affiche differentes feuilles associées a une classe
+    fonction qui affiche différentes feuilles associées a une classe
     :param char_path_train:
     :param sample_name:
     :param modelse:
@@ -95,4 +95,3 @@ def make_graph_random_sample(char_path_train, sample_name, modelse):
             plt.imshow(img)
     plt.savefig('graph/' + str(modelse) + '/Random_sample_' + str(modelse) + '.png')
     plt.show()
-

@@ -28,12 +28,9 @@ class_weight = {}  # dictionnaire comportant les poids des feuilles de train et 
 label_map = {}  # dictionnaire comportant les index et nom des feuilles de train et validation
 
 
-# TODO  : create_validation(), weigth(), main 2 partie,
-# VALIDE : make_list, create_model, train, main 1 partie
-
 def make_list(path, x):
     """
-    cette fonction remplie 3 tableau (leaf, sample_count, sample_name) qui vont facilité l'accès au image et à leur tri
+    fonction qui crée 3 tableau (leaf, sample count, sample name)
     :param path:
     :param x:
     :return:
@@ -54,7 +51,6 @@ def make_list(path, x):
         count += 1
         if count >= 10:
             break
-
     leaf.append(tableau)
     sample_count.append(tableau1)
     sample_name.append(tableau2)
@@ -62,7 +58,7 @@ def make_list(path, x):
 
 def create_validation(validation_split):
     """
-    cette fonction créer un dossier avec 20% des feuilles qui se trouve dans le dossier TRAIN
+    fonction qui crée un dossier avec 20% des feuilles qui se trouve dans le dossier TRAIN
     :param validation_split:
     :return:
     """
@@ -136,7 +132,7 @@ def weigth(training_set):
 
 def train(model, x, background):
     """
-    Fonction a définir TODO
+    Fonction qui va permettre l'entrainement de nos données
     :param model:
     :return:
     """
@@ -202,9 +198,9 @@ def main():
     Fonction principale qui séquence le programme
     1. Préparation des données
     2. La visualisation des données à l'aide de graph
-    3. Creer un nouveau model
-    4  charge le model si il a été train || Sinon le train s'effectue et affiche sont efficacité
-    5. lance la prediction et affiche les resultat
+    3. Créer un nouveau model
+    4  Charge le model si il a été entrainé || Sinon l'entrainement s'effectue et affiche sont efficacité
+    5. Lance la prediction et affiche les résultats
     :return:
     """
     background = False
@@ -227,7 +223,6 @@ def main():
     print(sample_name)
     print('sample count: ')
     print(sample_count)
-
 
     # Création des graph
     makegraph.make_graph_count('train', 0, leaf, sample_count, sample_name, modelse)

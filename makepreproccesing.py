@@ -10,7 +10,7 @@ from matplotlib import colors
 # STEP 1
 def pull_random_pixels(samples_per_class, pixels_per_sample, char_path_train, leaf):
     """
-    fonction qui récupère aléatoirement des pixel des images sélectionnées
+    fonction qui récupère aléatoirement des pixels des images sélectionnées
     :param samples_per_class:
     :param pixels_per_sample:
     :param char_path_train:
@@ -182,7 +182,7 @@ def color_segment_function(img_array):
 
 def make_prepoccessing(modelse, char_path_train, leaf):
     """
-    Fonction principale du pre-proccessing qui est divisé en 6 étapes
+    Fonction principale du pre-processing qui est divisé en 6 étapes
     :param modelse:
     :param char_path_train:
     :param leaf:
