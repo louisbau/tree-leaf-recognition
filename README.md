@@ -8,13 +8,16 @@ BRICE KOUETCHEU
 ## Github
 Lien du github : https://github.com/louisbau/tree-leaf-recognition
 
+## Database
+
+Lien Onedrive : https://ephec-my.sharepoint.com/:f:/g/personal/he201881_students_ephec_be/EnQ_sjl8RcVJq9ORvuGledMBODdWC0axn3xY0Z98gukGhA?e=ul193N
 ## Noteboook
 
 Aller voir le notebook, pour suivre l'avancement du projet (rapport.ipynb)
 
 ## Fichier important 
 - fichier principal = train.py => fichier à lancer
-- file : requirement.txt => permet le téléchargement des librairies
+- file : requirement.txt => permet le téléchargement des librairies 
 - folder : Dataset avec train, test et validation => sample
 - notebook : rapport.ipynb => synthèse
 
