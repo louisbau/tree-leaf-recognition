@@ -5,6 +5,9 @@ LOGAN MONTALTO
 DEVASHISH BASNET 
 BRICE KOUETCHEU
 
+## Github
+Lien du github : https://github.com/louisbau/tree-leaf-recognition
+
 ## Noteboook
 
 Aller voir le notebook, pour suivre l'avancement du projet (rapport.ipynb)
@@ -19,6 +22,7 @@ Aller voir le notebook, pour suivre l'avancement du projet (rapport.ipynb)
 - python version 3.8.10
 - télécharger le fichier train.zip et le déziper
 - le placer dans le fichier Datasets au meme niveau que le folder test
+```
 DATASETS --- test ---
             |
             train ---
@@ -26,6 +30,8 @@ DATASETS --- test ---
                      ---- famille
                      ---- famille
                      ---- famille
+```
+
   
 - charger les libraries : `pip install -r requirements.txt` 
 rem: il y a bcp de librairie -> c'est long
