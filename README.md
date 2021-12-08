@@ -24,7 +24,8 @@ Aller voir le notebook, pour suivre l'avancement du projet (rapport.ipynb)
 ## Mode emploi 
 - python version 3.8.10
 - télécharger le fichier train.zip et le déziper
-- le placer dans le fichier Datasets au meme niveau que le folder test
+- le placer train dans le fichier Datasets au meme niveau que le folder test
+- placer le dossier test au meme niveau qui se trouve dans le fichier Datasets.zip
 ```
 DATASETS --- test ---
             |
