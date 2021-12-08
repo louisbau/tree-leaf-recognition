@@ -6,6 +6,14 @@ import random
 from math import sqrt, floor
 from matplotlib import colors
 
+"""
+GROUPE 3TL1: 
+LOUIS BAUCHAU
+LOGAN MONTALTO
+DEVASHISH BASNET 
+BRICE KOUETCHEU
+"""
+
 
 # STEP 1
 def pull_random_pixels(samples_per_class, pixels_per_sample, char_path_train, leaf):

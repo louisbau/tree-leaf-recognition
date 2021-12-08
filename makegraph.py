@@ -4,8 +4,14 @@ import matplotlib.pyplot as plt
 from keras.preprocessing import image
 import random
 
+"""
+GROUPE 3TL1: 
+LOUIS BAUCHAU
+LOGAN MONTALTO
+DEVASHISH BASNET 
+BRICE KOUETCHEU
+"""
 
-# https://github.com/Reedr1208/seedling_classification/blob/master/Seedling_Classification.ipynb
 
 def make_graph_count(x, y, leaf, sample_count, sample_name, modelse):
     """

@@ -1,4 +1,9 @@
 # tree-leaf-recognition
+GROUPE 3TL1: 
+LOUIS BAUCHAU
+LOGAN MONTALTO
+DEVASHISH BASNET 
+BRICE KOUETCHEU
 
 ## Noteboook
 
@@ -22,7 +27,8 @@ DATASETS --- test ---
                      ---- famille
                      ---- famille
   
-- charger les libraries : `pip install -r requirements.txt`
+- charger les libraries : `pip install -r requirements.txt` 
+rem: il y a bcp de librairie -> c'est long
 ### source : 
 
 - https://github.com/Reedr1208/seedling_classification/blob/master/Seedling_Classification.ipynb

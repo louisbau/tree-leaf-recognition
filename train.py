@@ -10,6 +10,14 @@ import makepreproccesing
 from prettytable import PrettyTable
 import pandas as pd
 
+"""
+GROUPE 3TL1: 
+LOUIS BAUCHAU
+LOGAN MONTALTO
+DEVASHISH BASNET 
+BRICE KOUETCHEU
+"""
+
 char_path_train = './Datasets/train'  # chemin vers le dossier train
 char_path_validation = './Datasets/validation'  # chemin vers le dossier validation
 char_path_test = './Datasets/test'  # chemin vers le dossier test
