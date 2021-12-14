@@ -21,7 +21,7 @@ BRICE KOUETCHEU
 char_path_train = './Datasets/train'  # chemin vers le dossier train
 char_path_validation = './Datasets/validation'  # chemin vers le dossier validation
 char_path_test = './Datasets/test'  # chemin vers le dossier test
-model_version = 26  # la version du modèle
+model_version = 27  # la version du modèle
 modelse = 'model_' + str(model_version)  # nom complet du model
 
 IMG_SIZE = (64, 64)  # resize des images
@@ -279,6 +279,8 @@ def main():
         shuffle=False)
 
     # PREDICTION
+
+    
     print('---- Résultat de la prédiction -----')
     result = model.predict(test_generator, steps=test_generator.n, verbose=1)
     predicted_class_indices = np.argmax(result, axis=1)
